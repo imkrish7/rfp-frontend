@@ -7,17 +7,22 @@ import {
 	CardHeader,
 	CardTitle,
 } from "./ui/card";
-import { rfpData } from "@/dummydata/rfp";
+import type { IRFP } from "@/types/rfp";
+import type { FC } from "react";
 
-const RFPDetails = () => {
+interface IProps {
+	rfp: IRFP;
+}
+
+const RFPDetails: FC<IProps> = ({ rfp }) => {
 	return (
 		<Card className="flex border-none rounded-none">
 			<CardHeader>
-				{/* <CardTitle className="text-3xl">{rfpData.issuedBy}</CardTitle> */}
-				<CardTitle className="text-3xl">{rfpData.title}</CardTitle>
+				{/* <CardTitle className="text-3xl">{rfp.issuedBy}</CardTitle> */}
+				<CardTitle className="text-3xl">{rfp.title}</CardTitle>
 				<div className="flex gap-2">
 					<span className="text-gray-400">
-						{new Date(rfpData.issueDate).toLocaleDateString()}
+						{new Date(rfp.issuedDate).toLocaleDateString()}
 					</span>
 					<span className="flex gap-1 items-center text-gray-400">
 						<Paperclip className="w-4 h-4" />
@@ -26,7 +31,7 @@ const RFPDetails = () => {
 				</div>
 			</CardHeader>
 			<CardDescription className="pl-6">
-				<div>{rfpData.description}</div>
+				<div>{rfp.description}</div>
 			</CardDescription>
 			<CardContent>
 				<div className="flex flex-col gap-4">
@@ -35,7 +40,7 @@ const RFPDetails = () => {
 							Scope Of Work
 						</span>
 						<div className="text-gray-350 text-base">
-							{rfpData.scopeOfWork.join(".\n")}
+							{rfp.scopeOfWork}
 						</div>
 					</div>
 					<div className="flex flex-col">
@@ -43,7 +48,7 @@ const RFPDetails = () => {
 							Evaluation Criteria
 						</span>
 						<div className="text-gray-350 text-base">
-							{rfpData.evaluationCriteria.join(".\n")}
+							{rfp.evaluationCriteria}
 						</div>
 					</div>
 					<div className="flex flex-col">
@@ -51,7 +56,7 @@ const RFPDetails = () => {
 							Deliverables
 						</span>
 						<div className="text-gray-350 text-base">
-							{rfpData.deliverables.join(".\n")}
+							{rfp.deliverables}
 						</div>
 					</div>
 				</div>
@@ -69,7 +74,7 @@ const RFPDetails = () => {
 							</span>
 							<span>
 								{new Date(
-									rfpData.timeline.proposalSubmission
+									rfp.timeline.proposalSubmission
 								).toLocaleDateString()}
 							</span>
 						</div>
@@ -79,7 +84,7 @@ const RFPDetails = () => {
 							</span>
 							<span>
 								{new Date(
-									rfpData.timeline.vendorSelection
+									rfp.timeline.vendorSelection
 								).toLocaleDateString()}
 							</span>
 						</div>
@@ -89,7 +94,7 @@ const RFPDetails = () => {
 							</span>
 							<span>
 								{new Date(
-									rfpData.timeline.projectStart
+									rfp.timeline.projectStart
 								).toLocaleDateString()}
 							</span>
 						</div>
@@ -99,7 +104,7 @@ const RFPDetails = () => {
 							</span>
 							<span>
 								{new Date(
-									rfpData.timeline.completion
+									rfp.timeline.completion
 								).toLocaleDateString()}
 							</span>
 						</div>

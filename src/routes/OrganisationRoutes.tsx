@@ -3,10 +3,9 @@ import { Navigate, Outlet } from "react-router";
 import { toast } from "sonner";
 
 const OrganisationRoutes = () => {
-	const { userRole } = useAuth();
+	const auth = useAuth();
 
-	console.log(userRole);
-
+	const userRole = auth.getSnapshot().context.loginResponse?.role;
 	if (userRole === "PROCUREMENT") {
 		return <Outlet />;
 	}

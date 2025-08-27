@@ -1,4 +1,4 @@
-import CreateRFPForm from "@/components/CreateRFPForm";
+import RFPForm from "@/components/RFPForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const CreateRFP = () => {
@@ -10,7 +10,7 @@ const CreateRFP = () => {
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<CreateRFPForm />
+				<RFPForm rfp={null} />
 			</CardContent>
 		</Card>
 	);

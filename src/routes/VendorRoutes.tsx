@@ -3,8 +3,8 @@ import { Navigate, Outlet } from "react-router";
 import { toast } from "sonner";
 
 const VendorRoutes = () => {
-	const { userRole } = useAuth();
-	console.log(userRole);
+	const auth = useAuth();
+	const userRole = auth.getSnapshot().context.loginResponse?.role;
 	if (userRole === "VENDOR") {
 		return <Outlet />;
 	}

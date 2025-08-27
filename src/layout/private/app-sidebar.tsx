@@ -19,6 +19,7 @@ import {
 	SidebarRail,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router";
+import { NavUser } from "./nav-user";
 
 const data = [
 	{
@@ -69,7 +70,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					))}
 				</SidebarMenu>
 			</SidebarContent>
-			<SidebarFooter></SidebarFooter>
+			<SidebarFooter>
+				<NavUser />
+			</SidebarFooter>
 			<SidebarRail />
 		</Sidebar>
 	);

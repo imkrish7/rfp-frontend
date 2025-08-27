@@ -1,23 +1,25 @@
-import RFPDetails from "@/components/RFPDetails";
+import RFPForm from "@/components/RFPForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { rfpMachine } from "@/machines/rfpMachine";
 import { useMachine } from "@xstate/react";
 import { useEffect } from "react";
 import { useParams } from "react-router";
 
-const RFPView = () => {
-	const [state, send] = useMachine(rfpMachine);
+const EditRFP = () => {
 	const params = useParams();
+	const [state, send] = useMachine(rfpMachine);
+
 	useEffect(() => {
 		if (params.rfpId) {
-			send({ type: "VIEW", rfpId: params.rfpId });
+			send({ type: "EDIT", rfpId: params.rfpId });
 		}
 	}, [send, params]);
-	if (state.matches("view") || !state.context.viewRFP) {
+
+	if (state.matches("edit")) {
 		return <Skeleton />;
 	}
 
-	return <RFPDetails rfp={state.context.viewRFP} />;
+	return <RFPForm rfp={state.context.editRFP} />;
 };
 
-export default RFPView;
+export default EditRFP;
