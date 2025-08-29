@@ -15,6 +15,42 @@ export interface ITimeline {
 	completion: string;
 }
 
+export interface FileToUpload {
+	filename: string;
+	size: number;
+	mimeType: string;
+}
+
+export interface AttachmentsPresignedURLS {
+	fileId: string;
+	uploadUrl: string;
+	filename: string;
+	finalUrl: string;
+}
+
+export interface AttachmentsUpdate {
+	fileId: string;
+	filename?: string;
+	filetype?: string;
+	status: "FAILED" | "UPLOADED";
+}
+
+export interface Attachment {
+	id: string;
+	rfpId: string;
+	proposalId: string;
+	contractId: string;
+	filename: string;
+	fileurl: string;
+	filetype: string;
+	size: number;
+	fileId: string;
+	status: "FAILED" | "UPLOADED" | "PENDING";
+	associatedTo: "RFP" | "CONTRACT" | "PROPOSAL";
+	createdAt: string;
+	updatedAt: string;
+}
+
 export interface IRFP {
 	id?: string;
 	orgId: string;
@@ -31,4 +67,5 @@ export interface IRFP {
 	proposalLimit?: number;
 	createdAt?: string;
 	updatedAt?: string;
+	attachments?: Attachment[];
 }

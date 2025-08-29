@@ -41,7 +41,7 @@ const LoginForm = () => {
 	}
 
 	return (
-		<Card className="w-[500px] border-none shadow-none">
+		<Card className="w-[500px] border-none shadow-none bg-transparent">
 			<CardContent>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(handleLogin)}>
@@ -52,12 +52,12 @@ const LoginForm = () => {
 								render={({ field }) => {
 									return (
 										<FormItem>
-											<FormLabel className="text-lg">
+											<FormLabel className="text-lg text-gray-400">
 												Email
 											</FormLabel>
 											<FormControl>
 												<Input
-													className="py-6 rounded-3xl"
+													className="py-6 rounded-3xl placeholder:text-gray-200 text-gray-400"
 													placeholder="Email..."
 													{...field}
 												/>
@@ -72,12 +72,12 @@ const LoginForm = () => {
 								render={({ field }) => {
 									return (
 										<FormItem>
-											<FormLabel className="text-lg">
+											<FormLabel className="text-lg text-gray-400">
 												Password
 											</FormLabel>
 											<FormControl>
 												<Input
-													className="py-6 rounded-3xl"
+													className="py-6 rounded-3xl placeholder:text-gray-200 text-gray-400"
 													placeholder="********"
 													{...field}
 												/>
@@ -86,7 +86,7 @@ const LoginForm = () => {
 									);
 								}}
 							/>
-							<Button className="rounded-3xl w-[250px] py-6 flex justify-between items-center">
+							<Button className="rounded-3xl w-[250px] py-6 flex justify-between items-center bg-gray-400">
 								<span>Login to Your Account</span>
 								<span>
 									<MoveRightIcon />

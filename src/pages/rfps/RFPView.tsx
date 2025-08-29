@@ -1,4 +1,5 @@
-import RFPDetails from "@/components/RFPDetails";
+// import RFPDetails from "@/components/RFPDetails";
+import RFPPreview from "@/components/RFPPreview";
 import { Skeleton } from "@/components/ui/skeleton";
 import { rfpMachine } from "@/machines/rfpMachine";
 import { useMachine } from "@xstate/react";
@@ -17,7 +18,19 @@ const RFPView = () => {
 		return <Skeleton />;
 	}
 
-	return <RFPDetails rfp={state.context.viewRFP} />;
+	const { attachments, ...rfp } = state.context.viewRFP;
+
+	return (
+		<div className="p-4">
+			<RFPPreview
+				details={{
+					rfp,
+					attachments,
+				}}
+				action={() => {}}
+			/>
+		</div>
+	);
 };
 
 export default RFPView;

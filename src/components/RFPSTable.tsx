@@ -37,11 +37,11 @@ import {
 	getPaginationRowModel,
 	getSortedRowModel,
 	type Row,
+	type RowData,
 	type SortingState,
 	useReactTable,
 	type VisibilityState,
 } from "@tanstack/react-table";
-import { z } from "zod";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -55,9 +55,9 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import type { rfpSchema } from "@/schema/rfp";
 import { useId, useMemo, useState } from "react";
 import RFPCellActions from "./RFPCellActions";
+import type { IRFP } from "@/types/rfp";
 
 const STATUS = {
 	DRAFT: "outline",
@@ -68,6 +68,12 @@ const STATUS = {
 	REJECTED: "destructive",
 	ARCHIEVED: "destructive",
 };
+
+declare module "@tanstack/table-core" {
+	interface TableMeta<TData extends RowData> {
+		handleDelete: (row: TData) => void;
+	}
+}
 
 // Create a separate component for the drag handle
 function DragHandle({ id }: { id: string }) {
@@ -89,7 +95,7 @@ function DragHandle({ id }: { id: string }) {
 	);
 }
 
-const columns: ColumnDef<z.infer<typeof rfpSchema>>[] = [
+const columns: ColumnDef<IRFP>[] = [
 	{
 		id: "drag",
 		header: () => null,
@@ -173,7 +179,7 @@ const columns: ColumnDef<z.infer<typeof rfpSchema>>[] = [
 	},
 ];
 
-function DraggableRow({ row }: { row: Row<z.infer<typeof rfpSchema>> }) {
+function DraggableRow({ row }: { row: Row<IRFP> }) {
 	const { transform, transition, setNodeRef, isDragging } = useSortable({
 		id: row.original.id!,
 	});
@@ -200,8 +206,10 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof rfpSchema>> }) {
 
 export function DataTable({
 	data: initialData,
+	handleDelete,
 }: {
-	data: z.infer<typeof rfpSchema>[];
+	data: IRFP[];
+	handleDelete: (row: IRFP) => void;
 }) {
 	const [data, setData] = useState(() => initialData);
 	const [rowSelection, setRowSelection] = useState({});
@@ -226,7 +234,7 @@ export function DataTable({
 		[data]
 	);
 
-	const table = useReactTable({
+	const table = useReactTable<IRFP>({
 		data,
 		columns,
 		state: {
@@ -235,6 +243,9 @@ export function DataTable({
 			rowSelection,
 			columnFilters,
 			pagination,
+		},
+		meta: {
+			handleDelete,
 		},
 		getRowId: (row) => row.id!.toString(),
 		enableRowSelection: true,

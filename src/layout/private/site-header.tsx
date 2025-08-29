@@ -1,3 +1,4 @@
+import { ModeToggle } from "@/components/ModeTogggle";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useMatches } from "react-router";
@@ -17,6 +18,9 @@ export function SiteHeader() {
 				/>
 				<h1 className="text-base font-medium">{header}</h1>
 				<div className="ml-auto flex items-center gap-2"></div>
+			</div>
+			<div>
+				<ModeToggle />
 			</div>
 		</header>
 	);

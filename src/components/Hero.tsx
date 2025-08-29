@@ -1,22 +1,46 @@
+import { Link } from "react-router";
+
 const Hero = () => {
 	return (
-		<section className="flex-1 flex flex-col items-center justify-center text-center px-6 py-20">
-			<h2 className="text-4xl font-bold mb-4 text-gradient italic">
-				Streamline Your RFP Management
-			</h2>
-			<p className="text-lg text-gray-700 max-w-2xl mb-8 italic">
-				Collaborate, track, and manage all your RFPs in one place. Save
-				time, stay compliant, and win more deals.
-			</p>
-			<div className="space-x-4">
-				<button className="bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-800 transition">
-					Get Started
-				</button>
-				<button className="border border-black text-black px-6 py-3 rounded-xl hover:bg-gray-100 transition">
-					Learn More
-				</button>
+		<>
+			<div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+				<div className="text-center">
+					<h1 className="text-5xl font-semibold tracking-tight text-balance text-white sm:text-7xl">
+						Turn Complex RFPs into Clear Decisions
+					</h1>
+					<p className="mt-8 text-lg font-medium text-pretty text-gray-400 sm:text-xl/8">
+						Automate repetitive tasks, centralize communication, and
+						evaluate proposals with confidence.
+					</p>
+					<div className="mt-10 flex items-center justify-center gap-x-6">
+						<Link
+							to="/login"
+							className="rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+						>
+							Get started
+						</Link>
+						<a
+							href="#"
+							className="text-sm/6 font-semibold text-white"
+						>
+							Learn more <span aria-hidden="true">→</span>
+						</a>
+					</div>
+				</div>
 			</div>
-		</section>
+			{/* <div
+				aria-hidden="true"
+				className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
+			>
+				<div
+					style={{
+						clipPath:
+							"polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+					}}
+					className="relative left-[calc(50%+3rem)] aspect-1155/678 w-144.5 -translate-x-1/2 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-288.75"
+				/>
+			</div> */}
+		</>
 	);
 };
 

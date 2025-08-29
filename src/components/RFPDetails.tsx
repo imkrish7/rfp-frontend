@@ -9,17 +9,49 @@ import {
 } from "./ui/card";
 import type { IRFP } from "@/types/rfp";
 import type { FC } from "react";
+import { Button } from "./ui/button";
+import { useAuth } from "@/context/AuthContext";
+import { Link } from "react-router";
 
 interface IProps {
 	rfp: IRFP;
 }
 
 const RFPDetails: FC<IProps> = ({ rfp }) => {
+	const auth = useAuth();
+
+	const role = auth.getSnapshot().context.loginResponse?.role;
 	return (
 		<Card className="flex border-none rounded-none">
 			<CardHeader>
-				{/* <CardTitle className="text-3xl">{rfp.issuedBy}</CardTitle> */}
-				<CardTitle className="text-3xl">{rfp.title}</CardTitle>
+				<div className="flex justify-between">
+					<CardTitle className="text-3xl">{rfp.title}</CardTitle>
+					<div className="flex gap-2">
+						{role === "PROCUREMENT" && (
+							<>
+								<Button
+									className="cursor"
+									variant={"destructive"}
+								>
+									Delete
+								</Button>
+								<Button
+									className="cursor"
+									variant={"secondary"}
+								>
+									Edit
+								</Button>{" "}
+							</>
+						)}
+						{role === "VENDOR" && (
+							<Link to={`/rfps/${rfp.id}/proposal/create`}>
+								<Button className="cursor" variant={"outline"}>
+									Submit Proposal
+								</Button>
+							</Link>
+						)}
+					</div>
+				</div>
 				<div className="flex gap-2">
 					<span className="text-gray-400">
 						{new Date(rfp.issuedDate).toLocaleDateString()}

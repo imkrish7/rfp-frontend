@@ -12,6 +12,8 @@ import { createBrowserRouter } from "react-router";
 import OrganisationRoutes from "./OrganisationRoutes";
 import RFPView from "@/pages/rfps/RFPView";
 import EditRFP from "@/pages/rfps/EditRFP";
+import VendorRoutes from "./VendorRoutes";
+import CreateProposal from "@/pages/rfps/CreateProposal";
 
 export const routers = createBrowserRouter([
 	{
@@ -59,10 +61,32 @@ export const routers = createBrowserRouter([
 					},
 					{
 						path: "/rfps/:rfpId",
-						handle: {
-							header: "RFP View",
-						},
-						Component: RFPView,
+						// handle: {
+						// 	header: "RFP View",
+						// },
+						// Component: RFPView,
+						children: [
+							{
+								index: true,
+								handle: {
+									header: "RFP View",
+								},
+								Component: RFPView,
+							},
+							{
+								path: "/rfps/:rfpId/proposal",
+								Component: VendorRoutes,
+								children: [
+									{
+										path: "/rfps/:rfpId/proposal/create",
+										handle: {
+											header: "Create Proposal",
+										},
+										Component: CreateProposal,
+									},
+								],
+							},
+						],
 					},
 					{
 						path: "/rfps/create",

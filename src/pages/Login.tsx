@@ -2,7 +2,7 @@ import LoginForm from "@/components/LoginForm";
 
 const Login = () => {
 	return (
-		<div className="flex items-center justify-center flex-col gap-4 min-h-[calc(100vh-60px)]">
+		<div className="flex items-center justify-center flex-col gap-4 h-[100vh]">
 			<div className="flex flex-col gap-2">
 				<div className="flex flex-col font-[fangsong]">
 					<span className="text-5xl font-semibold text-center">

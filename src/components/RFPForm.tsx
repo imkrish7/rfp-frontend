@@ -6,7 +6,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from "./ui/form";
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { Input } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
@@ -16,20 +16,17 @@ import { format } from "date-fns/format";
 import { cn } from "@/lib/utils";
 import { Textarea } from "./ui/textarea";
 import type { IRFP } from "@/types/rfp";
-import type { BaseSyntheticEvent, FC } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { rfpSchema } from "@/schema/rfp";
 import type z from "zod";
-import { useMachine } from "@xstate/react";
-import { rfpMachine } from "@/machines/rfpMachine";
-import { Navigate } from "react-router";
+import type { FC } from "react";
 
 interface IProps {
 	rfp: IRFP | null;
+	handleSubmit: SubmitHandler<z.infer<typeof rfpSchema>>;
 }
 
-const RFPForm: FC<IProps> = ({ rfp }) => {
-	const [state, send] = useMachine(rfpMachine);
+const RFPForm: FC<IProps> = ({ rfp, handleSubmit }) => {
 	let initialValue: z.infer<typeof rfpSchema | undefined> = {
 		title: "",
 		issuedBy: "",
@@ -68,42 +65,7 @@ const RFPForm: FC<IProps> = ({ rfp }) => {
 			...initialValue!,
 		},
 	});
-	const handleSubmit = (
-		data: z.infer<typeof rfpSchema>,
-		e?: BaseSyntheticEvent
-	) => {
-		const action = (e?.nativeEvent as SubmitEvent).submitter?.getAttribute(
-			"data-action"
-		);
-		send({
-			type: "NEW",
-			newRFP: {
-				...data,
-				status: action!,
-				deadline: new Date(data.deadline).toLocaleDateString(),
-				timeline: {
-					completion: new Date(
-						data.timeline.completion
-					).toLocaleDateString(),
-					projectStart: new Date(
-						data.timeline.projectStart
-					).toLocaleDateString(),
-					proposalSubmission: new Date(
-						data.timeline.proposalSubmission
-					).toLocaleDateString(),
-					vendorSelection: new Date(
-						data.timeline.vendorSelection
-					).toLocaleDateString(),
-				},
-				orgId: rfp?.orgId ?? "",
-			},
-		});
-	};
-	console.log(state.value);
 
-	if (state.matches("newRFPAdded")) {
-		return <Navigate to="/rfps" />;
-	}
 	return (
 		<Form {...form}>
 			<form className="p-4" onSubmit={form.handleSubmit(handleSubmit)}>
@@ -533,13 +495,6 @@ const RFPForm: FC<IProps> = ({ rfp }) => {
 								data-action="DRAFT"
 							>
 								Save to Draft
-							</Button>
-							<Button
-								type="submit"
-								className="py-2"
-								data-action="PUBLISHED"
-							>
-								Publish
 							</Button>
 						</div>
 					</div>
