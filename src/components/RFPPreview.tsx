@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Attachment, IRFP, RFPStatus } from "@/types/rfp";
 import { Badge } from "./ui/badge";
+import { useAuth } from "@/context/AuthContext";
+import { Link } from "react-router";
+import { Button } from "./ui/button";
 
 interface IProps {
 	details: {
@@ -16,6 +19,8 @@ const STATUS: Record<RFPStatus, string> = {
 
 export default function RFPPreview({ details, action }: IProps) {
 	const { rfp, attachments } = details;
+	const auth = useAuth();
+	const role = auth.getSnapshot().context.loginResponse?.role;
 	return (
 		<div>
 			<div className="">
@@ -228,33 +233,45 @@ export default function RFPPreview({ details, action }: IProps) {
 			</div>
 
 			<div className="mt-6 flex items-center justify-end gap-x-6">
-				<button
-					type="button"
-					className="text-sm/6 font-semibold text-gray outline-2 rounded-md px-3 py-2"
-					onClick={() => {
-						action("CANCEL");
-					}}
-				>
-					Keep it Drafted
-				</button>
-				<button
-					type="submit"
-					className="rounded-md bg-gray-500 px-3 py-2 text-sm font-semibold text-gray focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
-					onClick={() => {
-						action("PUBLISH", "PUBLISHED");
-					}}
-				>
-					Publish
-				</button>
-				<button
-					type="submit"
-					className="rounded-md bg-gray-500 px-3 py-2 text-sm font-semibold text-gray focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
-					onClick={() => {
-						action("UNDER_REVIEW", "UNDER_REVIEW");
-					}}
-				>
-					Under Review
-				</button>
+				{role === "PROCUREMENT" ? (
+					<>
+						<button
+							type="button"
+							className="text-sm/6 font-semibold text-gray outline-2 rounded-md px-3 py-2"
+							onClick={() => {
+								action("CANCEL");
+							}}
+						>
+							Keep it Drafted
+						</button>
+						{rfp.status !== "PUBLISHED" && (
+							<button
+								type="submit"
+								className="rounded-md bg-gray-500 px-3 py-2 text-sm font-semibold text-gray focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
+								onClick={() => {
+									action("PUBLISH", "PUBLISHED");
+								}}
+							>
+								Publish
+							</button>
+						)}
+						<button
+							type="submit"
+							className="rounded-md bg-gray-500 px-3 py-2 text-sm font-semibold text-gray focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
+							onClick={() => {
+								action("UNDER_REVIEW", "UNDER_REVIEW");
+							}}
+						>
+							Under Review
+						</button>
+					</>
+				) : (
+					<Link to={`/rfps/${rfp.id}/proposal/create`}>
+						<Button className="cursor" variant={"outline"}>
+							Submit Proposal
+						</Button>
+					</Link>
+				)}
 			</div>
 		</div>
 	);

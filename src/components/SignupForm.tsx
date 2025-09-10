@@ -59,6 +59,7 @@ const SignupForm = () => {
 											<Input
 												className="py-6 rounded-3xl placeholder:text-gray-200 text-gray-400"
 												placeholder="********"
+												type="password"
 												{...field}
 											/>
 										</FormControl>

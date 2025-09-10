@@ -124,7 +124,6 @@ const CreateRFP = () => {
 			status,
 		});
 	};
-	console.log(state);
 	if (state.matches("newRFPAdded")) {
 		return <Navigate to="/rfps" />;
 	}

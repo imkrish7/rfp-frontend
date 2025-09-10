@@ -1,5 +1,7 @@
 import {
 	authentication,
+	createOrganisationProfile,
+	createVendorProfile,
 	getUserAction,
 	loginAction,
 	signupAction,
@@ -7,8 +9,11 @@ import {
 import type {
 	LoginRequest,
 	LoginResponse,
+	OrganisationProfile,
+	ProfileData,
 	SignupRequest,
 	UserProfile,
+	VendorProfileData,
 } from "@/types/auth";
 import type { AxiosError } from "axios";
 
@@ -25,6 +30,10 @@ export const authMachine = setup({
 			signupError: string | null;
 			profileFetchError: string | null;
 			isAuthenticated: boolean;
+			otp: string | null;
+			email: string | null;
+			organisationProfileData: Omit<OrganisationProfile, "role"> | null;
+			vendorProfileData: Omit<VendorProfileData, "role"> | null;
 		},
 		events: {} as
 			| {
@@ -41,6 +50,19 @@ export const authMachine = setup({
 			  }
 			| {
 					type: "LOGOUT";
+			  }
+			| {
+					type: "ACTIVATE";
+					otp: string;
+					email: string;
+			  }
+			| {
+					type: "RESEND";
+					email: string;
+			  }
+			| {
+					type: "CREATE_PROFILE";
+					profileData: ProfileData;
 			  },
 	},
 	actors: {
@@ -67,10 +89,26 @@ export const authMachine = setup({
 			const response = await authentication();
 			return response;
 		}),
+		createOrganisationProfile: fromPromise(
+			async ({ input }: { input: Omit<OrganisationProfile, "role"> }) => {
+				const response = await createOrganisationProfile(input);
+				return response;
+			}
+		),
+		createVendorProfile: fromPromise(
+			async ({ input }: { input: Omit<VendorProfileData, "role"> }) => {
+				const response = await createVendorProfile(input);
+				return response;
+			}
+		),
+		getUserAccountActivated: fromPromise(async () => {}),
+		resendOTP: fromPromise(async () => {}),
 	},
 	guards: {
 		hasAuthToken: () => {
+			console.log("I hve been here");
 			const authToken = localStorage.getItem("RFP_ACCESS_TOKEN");
+			console.log(authToken, localStorage);
 			if (authToken && authToken.length > 0) {
 				return true;
 			}
@@ -89,6 +127,12 @@ export const authMachine = setup({
 			}
 			return false;
 		},
+		validateUser: (
+			{ context },
+			params: { role: "PROCUREMENT" | "VENDOR" }
+		) => {
+			return context.loginResponse?.role === params.role;
+		},
 	},
 	actions: {},
 }).createMachine({
@@ -104,6 +148,10 @@ export const authMachine = setup({
 		userProfile: null,
 		profileFetchError: null,
 		isAuthenticated: false,
+		otp: null,
+		email: null,
+		organisationProfileData: null,
+		vendorProfileData: null,
 	},
 	states: {
 		unauthorized: {
@@ -127,6 +175,7 @@ export const authMachine = setup({
 							actions: assign(({ event }) => {
 								return {
 									loginCredentials: event.loginCredentials,
+									loginError: null,
 								};
 							}),
 						},
@@ -178,7 +227,7 @@ export const authMachine = setup({
 							return context.signupCredentials;
 						},
 						onDone: {
-							target: "#authMachine.activateAccount",
+							target: "#authMachine.unauthorized.activateAccount",
 						},
 						onError: {
 							target: "tryAuthenticate",
@@ -194,7 +243,7 @@ export const authMachine = setup({
 					always: [
 						{
 							guard: "isAccountActivated",
-							target: "#authMachine.activateAccount",
+							target: "#authMachine.unauthorized.activateAccount",
 						},
 						{
 							target: "#authMachine.authorized",
@@ -240,10 +289,60 @@ export const authMachine = setup({
 						},
 					},
 				},
-				activateAccount: {},
+				activateAccount: {
+					on: {
+						ACTIVATE: {
+							target: "#authMachine.unauthorized.activatingAccount",
+							actions: assign(({ event }) => {
+								return {
+									otp: event.otp,
+									email: event.email,
+								};
+							}),
+						},
+						RESEND: {
+							target: "#authMachine.unauthorized.resendingEmail",
+							actions: assign(({ event }) => {
+								return {
+									email: event.email,
+								};
+							}),
+						},
+					},
+				},
+				activatingAccount: {
+					invoke: {
+						src: "getUserAccountActivated",
+						input: ({ context }) => {
+							if (!context.otp || !context.email) {
+								throw new Error("Bad Request!");
+							}
+							return context.otp;
+						},
+						onDone: {
+							target: "#authMachine.unauthorized.tryAuthenticate",
+						},
+						onError: {
+							target: "#authMachine.unauthorized.activateAccount",
+						},
+					},
+				},
+				resendingEmail: {
+					invoke: {
+						src: "resendOTP",
+						input: ({ context }) => {
+							return context.email;
+						},
+						onDone: {
+							target: "#authMachine.unauthorized.activateAccount",
+						},
+						onError: {
+							target: "#authMachine.unauthorized.activateAccount",
+						},
+					},
+				},
 			},
 		},
-		activateAccount: {},
 		createUser: {},
 		authorized: {
 			initial: "nextStep",
@@ -285,8 +384,91 @@ export const authMachine = setup({
 					on: {
 						LOGOUT: {
 							target: "#authMachine.unauthorized",
+							actions: assign(() => {
+								localStorage.clear();
+								return {
+									loginResponse: null,
+									loginError: null,
+									loginCredentials: null,
+									signupCredentials: null,
+									signupError: null,
+									userProfile: null,
+									profileFetchError: null,
+									isAuthenticated: false,
+								};
+							}),
+						},
+						CREATE_PROFILE: {
+							target: "creatingProfile",
+							actions: assign(({ event }) => {
+								if (event.profileData.role === "organisation") {
+									return {
+										organisationProfileData:
+											event.profileData,
+									};
+								} else {
+									return {
+										vendorProfileData: event.profileData,
+									};
+								}
+							}),
 						},
 					},
+				},
+				creatingProfile: {
+					always: [
+						{
+							guard: {
+								type: "validateUser",
+								params: { role: "PROCUREMENT" },
+							},
+							target: "createOrganisationProfile",
+						},
+						{
+							guard: {
+								type: "validateUser",
+								params: { role: "VENDOR" },
+							},
+							target: "createVendorProfile",
+						},
+					],
+				},
+				createOrganisationProfile: {
+					invoke: {
+						src: "createOrganisationProfile",
+						input: ({ context }) => {
+							if (!context.organisationProfileData) {
+								throw new Error("Bad request!");
+							}
+							return context.organisationProfileData;
+						},
+						onDone: {
+							target: "dashboard",
+						},
+						onError: {
+							target: "profileFetchError",
+						},
+					},
+				},
+				createVendorProfile: {
+					invoke: {
+						src: "createVendorProfile",
+						input: ({ context }) => {
+							if (!context.vendorProfileData) {
+								throw new Error("Bad request!");
+							}
+							return context.vendorProfileData;
+						},
+						onDone: {
+							target: "dashboard",
+						},
+						onError: {
+							target: "profileCreateError",
+						},
+					},
+				},
+				profileCreateError: {
+					target: "completeProfile",
 				},
 				profileFetchError: {},
 				dashboard: {

@@ -6,3 +6,12 @@ export const api = axios.create({
 		"Content-Type": "application/json",
 	},
 });
+
+api.interceptors.request.use(function (config) {
+	if (localStorage.getItem("RFP_ACCESS_TOKEN")) {
+		config.headers.Authorization = `Bearer ${localStorage.getItem(
+			"RFP_ACCESS_TOKEN"
+		)}`;
+	}
+	return config;
+});

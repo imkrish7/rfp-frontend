@@ -19,7 +19,7 @@ export function SiteHeader() {
 				<h1 className="text-base font-medium">{header}</h1>
 				<div className="ml-auto flex items-center gap-2"></div>
 			</div>
-			<div>
+			<div className="pr-4">
 				<ModeToggle />
 			</div>
 		</header>

@@ -10,6 +10,7 @@ import { z } from "zod";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router";
+import { toast } from "sonner";
 
 const LoginForm = () => {
 	const [redirect, setRedirect] = useState<string | null>(null);
@@ -27,10 +28,20 @@ const LoginForm = () => {
 
 	useEffect(() => {
 		const subscription = auth.subscribe((snapshot) => {
-			if (snapshot.matches("activateAccount")) {
+			console.log(snapshot);
+			if (snapshot.matches({ unauthorized: "activateAccount" })) {
 				setRedirect("/verify");
-			} else if (snapshot.matches({ authorized: "dashboard" })) {
-				setRedirect("/dashboard");
+			} else if (snapshot.matches("authorized")) {
+				const _redirect = snapshot.matches({
+					authorized: "completeProfile",
+				})
+					? "/profile/complete"
+					: "/dashboard";
+				console.log(_redirect);
+				setRedirect(_redirect);
+			}
+			if (snapshot.context.loginError) {
+				toast.error(snapshot.context.loginError);
 			}
 		});
 		return () => subscription.unsubscribe();
@@ -79,6 +90,7 @@ const LoginForm = () => {
 												<Input
 													className="py-6 rounded-3xl placeholder:text-gray-200 text-gray-400"
 													placeholder="********"
+													type="password"
 													{...field}
 												/>
 											</FormControl>

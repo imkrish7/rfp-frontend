@@ -18,3 +18,24 @@ export interface LoginRequest {
 export interface UserProfile {
 	email: string;
 }
+
+export interface OrganisationProfile {
+	role: "organisation";
+	name: string;
+	logo?: string;
+	website: string;
+	description: string;
+}
+export interface VendorProfileData {
+	role: "vendor";
+	name: string;
+	businessCategory: string;
+	contactEmail: string;
+	contactPerson: string;
+	description: string;
+	gstin: string;
+	website: string;
+	logo?: string;
+}
+
+export type ProfileData = OrganisationProfile | VendorProfileData;
